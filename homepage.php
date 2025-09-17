@@ -91,7 +91,7 @@
         </div>
         <div class="footer-contact">
           <h3>Contact Us</h3>
-          <p>Email: info@yhemiroses.com</p>
+          <!-- <p>Email: info@yhemiroses.com</p> -->
           <p>Phone: +234 802 357 9868</p>
           <div class="socials">
             <a href="#">Facebook</a>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart - YhemiRoses Fabrics</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo">YhemiRoses Fabrics</div>
+      <nav>
+        <ul>
+          <li><a href="homepage.php">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li>
+            <a href="cart.html" class="active"
+              >Cart <span id="cart-count">0</span></a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Cart Section -->
+    <section class="cart-page" style="padding: 50px 20px; text-align: center">
+      <h2>Your Cart</h2>
+      <div id="cart-items" style="max-width: 800px; margin: 30px auto"></div>
+      <h3 id="cart-total"></h3>
+      <button id="checkout-btn" class="btn" style="margin-top: 20px">
+        Checkout
+      </button>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-about">
+          <h3>About YhemiRoses Fabrics</h3>
+          <p>Premium Ankara fabrics for your unique style.</p>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h3>Contact Us</h3>
+          <p>Email: info@yhemiroses.com</p>
+          <p>Phone: +234 800 000 0000</p>
+          <div class="socials">
+            <a href="#">Facebook</a>
+            <a href="#">Instagram</a>
+            <a href="#">Twitter</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2025 YhemiRoses Fabrics. All rights reserved.
+      </div>
+    </footer>
+
+    <!-- Paystack SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+
+    <!-- CART + PAYMENT LOGIC -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const cartItemsContainer = document.getElementById("cart-items");
+        const cartTotal = document.getElementById("cart-total");
+        const cartCount = document.getElementById("cart-count");
+        const checkoutBtn = document.getElementById("checkout-btn");
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Update cart count
+        function updateCartCount() {
+          cartCount.textContent = cart.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+          );
+        }
+
+        // Display cart
+        function displayCart() {
+          cartItemsContainer.innerHTML = "";
+
+          if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+            cartTotal.textContent = "";
+            return;
+          }
+
+          let total = 0;
+
+          cart.forEach((item, index) => {
+            total += item.price * item.quantity;
+
+            const div = document.createElement("div");
+            div.classList.add("cart-item");
+            div.innerHTML = `
+              <h4>${item.name}</h4>
+              <p>₦${item.price} x ${item.quantity}</p>
+              <button class="remove-item" data-index="${index}">Remove</button>
+            `;
+            cartItemsContainer.appendChild(div);
+          });
+
+          cartTotal.textContent = `Total: ₦${total.toLocaleString()}`;
+          updateCartCount();
+        }
+
+        // Remove items
+        cartItemsContainer.addEventListener("click", (e) => {
+          if (e.target.classList.contains("remove-item")) {
+            const index = e.target.getAttribute("data-index");
+            cart.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
+          }
+        });
+
+        // Checkout with Paystack
+        checkoutBtn.addEventListener("click", () => {
+          if (cart.length === 0) {
+            alert("Your cart is empty!");
+            return;
+          }
+
+          let totalAmount = cart.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          );
+
+          // Paystack Payment
+          let handler = PaystackPop.setup({
+            key: "pk_test_6c57a5487a7c86ea816a7e4e4cef29e8b70e8f44", // this is your Paystack PUBLIC key
+            email: "eniolorundacharis@gmail.com",
+            amount: totalAmount * 100, // Paystack uses kobo
+            currency: "NGN",
+            ref: "TRX" + Math.floor(Math.random() * 1000000000), // unique transaction reference
+            callback: function (response) {
+              alert("Payment successful! Reference: " + response.reference);
+              cart = [];
+              localStorage.setItem("cart", JSON.stringify(cart));
+              displayCart();
+            },
+            onClose: function () {
+              alert("Payment cancelled.");
+            },
+          });
+          handler.openIframe();
+        });
+
+        displayCart();
+      });
+    </script>
+  </body>
+</html>

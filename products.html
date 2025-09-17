@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products - YhemiRoses Fabrics</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">YhemiRoses Fabrics</div>
+    <nav>
+      <ul>
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li>
+          <a href="cart.html">Cart <span id="cart-count">0</span></a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Products Section -->
+  <section class="products-page" style="padding: 50px 20px; text-align: center">
+    <h2>All Ankara Designs</h2>
+    <div class="products-grid">
+      <div class="product-card">
+        <img src="images/ankara 1.jpg" alt="Ankara 1" />
+        <h3>Ankara Print 1</h3>
+        <p>₦10 000</p>
+        <button class="add-to-cart" data-id="1" data-name="Ankara Print 1" data-price="10000" data-image="images/ankara 1.jpg">
+          Add to Cart
+        </button>
+      </div>
+      <div class="product-card">
+        <img src="images/ankara 2.jpg" alt="Ankara 2" />
+        <h3>Ankara Print 2</h3>
+        <p>₦12 000</p>
+        <button class="add-to-cart" data-id="2" data-name="Ankara Print 2" data-price="12000" data-image="images/ankara 2.jpg">
+          Add to Cart
+        </button>
+      </div>
+      <div class="product-card">
+        <img src="images/ankara 3.jpg" alt="Ankara 3" />
+        <h3>Ankara Print 3</h3>
+        <p>₦15 000</p>
+        <button class="add-to-cart" data-id="3" data-name="Ankara Print 3" data-price="15000" data-image="images/ankara 3.jpg">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Load cart count on page load
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      document.getElementById("cart-count").textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
+    }
+
+    updateCartCount();
+
+    // Add to cart logic
+    document.querySelectorAll(".add-to-cart").forEach(button => {
+      button.addEventListener("click", () => {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const product = {
+          id: button.dataset.id,
+          name: button.dataset.name,
+          price: parseInt(button.dataset.price),
+          image: button.dataset.image,
+          quantity: 1
+        };
+
+        // check if already in cart
+        const existing = cart.find(item => item.id === product.id);
+        if (existing) {
+          existing.quantity++;
+        } else {
+          cart.push(product);
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        alert(product.name + " added to cart!");
+      });
+    });
+  </script>
+</body>
+</html>
